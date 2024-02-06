@@ -5,7 +5,7 @@ import com.example.pruebatecnica.preferences.MySettings;
 public class ItemCatalogo {
     private int Id;
     private String nombre;
-    private String opcionSeleccionada = "NO";
+    private String opcionSeleccionada = "N/A";
     private String rutaImagen  = MySettings.getIconBase64();
 
     public String getRutaImagen() {
