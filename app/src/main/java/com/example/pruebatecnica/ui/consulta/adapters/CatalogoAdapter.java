@@ -4,6 +4,9 @@ import static com.example.pruebatecnica.R.id.naRadioButton;
 import static com.example.pruebatecnica.R.id.siRadioButton;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,8 +83,9 @@ public class CatalogoAdapter extends RecyclerView.Adapter<CatalogoAdapter.ViewHo
             }
         });
 
+
         Glide.with(context)
-                .load(item.getRutaImagen())
+                .load(convertBase64ToBitmap(item.getRutaImagen()))
                 .into(holder.cameraImageView);
     }
 
@@ -92,6 +96,10 @@ public class CatalogoAdapter extends RecyclerView.Adapter<CatalogoAdapter.ViewHo
     public void actualizarLista(List<ItemCatalogo> nuevaLista) {
         this.items = nuevaLista;
         notifyDataSetChanged();
+    }
+    private Bitmap convertBase64ToBitmap(String base64String) {
+        byte[] imageAsBytes = Base64.decode(base64String, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
     }
 
 
