@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void mostrarMensajeRapido(String mensaje) {
+    public void mostrarMensajeRapido(String mensaje) {
         // Mostrar el Toast
         Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_SHORT).show();
     }

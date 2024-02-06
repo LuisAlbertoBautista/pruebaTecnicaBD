@@ -18,10 +18,11 @@ public class ConsultaViewModel extends ViewModel {
     private AbastecimientoRepository abastecimientoRepository;
 
     private MutableLiveData <List<ItemCatalogo>> itemCatalogoList = new MutableLiveData<>();
+    private MutableLiveData <Boolean> update = new MutableLiveData<>();
     public void getData(Context context){
         abastecimientoRepository = new AbastecimientoRepository(context);
-        List<Abastecimiento> abastecimientos = abastecimientoRepository.getAllAbastecimientos();
         List<ItemCatalogo> itemCatalogos = new ArrayList<>();
+        List<Abastecimiento> abastecimientos = abastecimientoRepository.getAllAbastecimientos();
         if (abastecimientos.size()> 0) {
             for (Abastecimiento abastecimiento : abastecimientos){
                 ItemCatalogo itemCatalogo =  new ItemCatalogo();
@@ -30,6 +31,8 @@ public class ConsultaViewModel extends ViewModel {
                 itemCatalogos.add(itemCatalogo);
             }
             setUpdateOpcionUserInitial(itemCatalogos);
+        }else {
+            this.itemCatalogoList.setValue(itemCatalogos);
         }
     }
 
@@ -43,9 +46,20 @@ public class ConsultaViewModel extends ViewModel {
         }
     }
 
+    public void setUpdateItem(ItemCatalogo itemCatalogo, Context context){
+        if (itemCatalogo.getId() == consultRepository.updateItemCatalogo(itemCatalogo)){
+            getData(context);
+            update.setValue(true);
+        }
+    }
+
 
     public MutableLiveData<List<ItemCatalogo>> getAbastecimientos() {
         return itemCatalogoList;
+    }
+
+    public MutableLiveData <Boolean> getStatusUpdate(){
+        return update;
     }
 
     public void setAbastecimientos(MutableLiveData<List<ItemCatalogo>> itemCatalogoList) {

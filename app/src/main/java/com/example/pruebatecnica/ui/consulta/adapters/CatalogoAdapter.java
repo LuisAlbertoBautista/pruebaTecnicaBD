@@ -68,7 +68,7 @@ public class CatalogoAdapter extends RecyclerView.Adapter<CatalogoAdapter.ViewHo
 
         holder.cameraImageView.setOnClickListener(v -> {
             try {
-                clickElementInterface.clickCamera();
+                clickElementInterface.clickCamera(item);
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }

@@ -7,7 +7,7 @@ import org.json.JSONObject;
 
 public interface EventosClick {
         interface ClickElementInterface{
-                void clickCamera() throws JSONException;
+                void clickCamera(ItemCatalogo itemCatalogo) throws JSONException;
                 void clickElementInterface(String elemnt, ItemCatalogo itemCatalogo) throws JSONException;
         }
 }

@@ -14,27 +14,27 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
+import android.widget.Toast;
 
-import com.example.pruebatecnica.R;
 import com.example.pruebatecnica.databinding.ActivityConsultaBinding;
-import com.example.pruebatecnica.databinding.ActivityMainBinding;
-import com.example.pruebatecnica.ui.catalogo.viewmodels.CatalogoViewModel;
 import com.example.pruebatecnica.ui.consulta.adapters.CatalogoAdapter;
 import com.example.pruebatecnica.ui.consulta.interfaces.EventosClick;
 import com.example.pruebatecnica.ui.consulta.models.ItemCatalogo;
 import com.example.pruebatecnica.ui.consulta.viewmodels.ConsultaViewModel;
-import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 public class Consulta extends AppCompatActivity implements EventosClick.ClickElementInterface{
     private ActivityConsultaBinding binding;
     private ConsultaViewModel consultaViewModel;
     private CatalogoAdapter catalogoAdapter;
+
+    private ItemCatalogo itemCatalogo;
 
 
     @Override
@@ -43,8 +43,6 @@ public class Consulta extends AppCompatActivity implements EventosClick.ClickEle
         binding = ActivityConsultaBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        initRecyclerView();
-
         consultaViewModel = new ViewModelProvider(this).get(ConsultaViewModel.class);
 
         consultaViewModel.getData(this);
@@ -52,15 +50,27 @@ public class Consulta extends AppCompatActivity implements EventosClick.ClickEle
         consultaViewModel.getAbastecimientos().observe(this, new Observer<List>() {
             @Override
             public void onChanged(List list) {
-                catalogoAdapter = new CatalogoAdapter(Consulta.this, list);
-                binding.recycler.setAdapter(catalogoAdapter);
+                if (list.size()>0) {
+                    catalogoAdapter = new CatalogoAdapter(Consulta.this, list);
+                    binding.recycler.setAdapter(catalogoAdapter);
+                }else {
+                    mostrarMensajeRapido("Descarga primero el catalogo");
+                }
+            }
+        });
+        consultaViewModel.getStatusUpdate().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean){
+                    catalogoAdapter.actualizarLista(consultaViewModel.getAbastecimientos().getValue());
+                }
             }
         });
     }
 
-void initRecyclerView(){
-
-}
+    public void mostrarMensajeRapido(String mensaje) {
+        Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_SHORT).show();
+    }
     private void checkExternalStoragePermission() {
         Boolean isPermissionWrite = false;
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -103,17 +113,24 @@ void initRecyclerView(){
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            byte[] byteArray = byteArrayOutputStream.toByteArray();
+            String base64Image = Base64.encodeToString(byteArray, Base64.DEFAULT);
+            itemCatalogo.setRutaImagen(base64Image);
+            consultaViewModel.setUpdateItem(itemCatalogo, Consulta.this);
         }
     }
 
 
     @Override
-    public void clickCamera() throws JSONException {
-            checkExternalStoragePermission();
+    public void clickCamera(ItemCatalogo itemCatalogo) throws JSONException {
+        this.itemCatalogo = itemCatalogo;
+        checkExternalStoragePermission();
     }
 
     @Override
     public void clickElementInterface(String elemnt, ItemCatalogo itemCatalogo) throws JSONException {
-
+        consultaViewModel.setUpdateItem(itemCatalogo, Consulta.this);
     }
 }
