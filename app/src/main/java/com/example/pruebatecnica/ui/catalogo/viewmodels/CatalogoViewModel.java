@@ -1,6 +1,7 @@
 package com.example.pruebatecnica.ui.catalogo.viewmodels;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -9,35 +10,35 @@ import androidx.lifecycle.ViewModel;
 import com.example.pruebatecnica.preferences.MySettings;
 import com.example.pruebatecnica.rest.ServiceApi;
 import com.example.pruebatecnica.ui.catalogo.database.AbastecimientoRepository;
+import com.example.pruebatecnica.ui.catalogo.models.Abastecimiento;
 import com.example.pruebatecnica.ui.catalogo.models.ApiResponse;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class CatalogoViewModel extends ViewModel implements ServiceApi.ResponseHttp {
-    private ServiceApi serviceApi;
+import java.util.List;
+
+public class CatalogoViewModel extends ViewModel  {
+
     private Context context;
     private AbastecimientoRepository abastecimientoRepository;
     private MutableLiveData <Boolean> succes =new MutableLiveData<>();
-    public void getCatalogo(Context context){
-        serviceApi = new ServiceApi(context,true);
-        abastecimientoRepository = new AbastecimientoRepository(context);
-        this.context = context;
-        serviceApi.startConnection("firebase/api/catalogos/Sanit_abastecimiento");
 
-    }
 
-    @Override
-    public void processFinish(int code, JSONObject data) throws Exception {
+    public void processFinish( JSONObject data, Context context){
         Gson gson = new Gson();
         ApiResponse apiResponse = gson.fromJson(String.valueOf(data), ApiResponse.class);
-        if (!MySettings.getBooleanPrefVal(this.context, "update")){
-            MySettings.setBooleanPrefVal(this.context, "update", true);
-            abastecimientoRepository.insertAbastecimientos(apiResponse.getAbastecimientoList());
+        List<Abastecimiento> abastecimientos = apiResponse.getAbastecimientoList();
+        Log.d("Abastecimiemto", String.valueOf(abastecimientos.size()));
+        abastecimientoRepository = new AbastecimientoRepository(context);
+        abastecimientoRepository.open();
+        if (!MySettings.getBooleanPrefVal(context, "update")){
+            MySettings.setBooleanPrefVal(context, "update", true);
+            abastecimientoRepository.insertAbastecimientos(abastecimientos);
         }
         else
-            abastecimientoRepository.actualizarBaseDeDatos(apiResponse.getAbastecimientoList());
+            abastecimientoRepository.actualizarBaseDeDatos(abastecimientos);
         setSucces(true);
     }
     public LiveData<Boolean> getSucces() {
@@ -46,10 +47,5 @@ public class CatalogoViewModel extends ViewModel implements ServiceApi.ResponseH
 
     public void setSucces(Boolean value) {
         succes.setValue(value);
-    }
-
-    @Override
-    public void onFail() throws JSONException {
-
     }
 }

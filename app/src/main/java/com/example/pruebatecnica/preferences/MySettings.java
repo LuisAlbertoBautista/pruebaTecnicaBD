@@ -7,7 +7,7 @@ public class MySettings {
     static SharedPreferences.Editor edit;
 
     public static SharedPreferences getSharedPref(Context mContext) {
-        SharedPreferences pref = mContext.getSharedPreferences("settingsClaro", Context.MODE_PRIVATE);
+        SharedPreferences pref = mContext.getSharedPreferences("settings", Context.MODE_PRIVATE);
         return pref;
     }
 

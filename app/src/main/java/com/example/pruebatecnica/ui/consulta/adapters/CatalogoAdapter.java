@@ -1,6 +1,7 @@
 package com.example.pruebatecnica.ui.consulta.adapters;
 
 import static com.example.pruebatecnica.R.id.naRadioButton;
+import static com.example.pruebatecnica.R.id.npRadioButton;
 import static com.example.pruebatecnica.R.id.siRadioButton;
 
 import android.content.Context;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
@@ -35,7 +37,7 @@ public class CatalogoAdapter extends RecyclerView.Adapter<CatalogoAdapter.ViewHo
     public CatalogoAdapter(Context context, List<ItemCatalogo> items) {
         this.context = context;
         this.items = items;
-        EventosClick.ClickElementInterface clickElementInterface = (EventosClick.ClickElementInterface) context;
+        clickElementInterface = (EventosClick.ClickElementInterface) context;
     }
 
 
@@ -52,9 +54,11 @@ public class CatalogoAdapter extends RecyclerView.Adapter<CatalogoAdapter.ViewHo
 
         holder.nombreItemTextView.setText(item.getNombre());
         if (item.getOpcionSeleccionada().contains("NO")){
-            holder.opcionesRadioGroup.check(naRadioButton);
+            holder.opcionesRadioGroup.check(npRadioButton);
         }else  if (item.getOpcionSeleccionada().contains("SI")){
             holder.opcionesRadioGroup.check(siRadioButton);
+        }else {
+            holder.opcionesRadioGroup.check(R.id.naRadioButton);
         }
 
         holder.opcionesRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {

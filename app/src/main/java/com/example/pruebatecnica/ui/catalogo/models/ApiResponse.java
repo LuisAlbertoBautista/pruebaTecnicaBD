@@ -20,6 +20,10 @@ public class ApiResponse {
         return abastecimientoList;
     }
 
+    public void setAbastecimientoList(List<Abastecimiento> list) {
+        this.abastecimientoList = list;
+    }
+
     public int getSuccess() {
         return success;
     }

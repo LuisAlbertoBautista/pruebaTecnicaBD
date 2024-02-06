@@ -27,14 +27,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     COLUMN_ID + " INTEGER PRIMARY KEY," +
                     COLUMN_TIPO_ABASTECIMIENTO + " TEXT," +
                     COLUMN_USUARIO_CREACION + " TEXT," +
-                    COLUMN_OPCION + " TEXT" +
+                    COLUMN_FECHA_CREACION + " TEXT" +
                     ")";
 
     private static final String CREATE_TABLE_OPCIONES_DE_USUARIO =
             "CREATE TABLE " + TABLE_OPCIONES_DE_USUARIO + " (" +
                     COLUMN_ID + " INTEGER PRIMARY KEY," +
                     COLUMN_TIPO_ABASTECIMIENTO + " TEXT," +
+                    COLUMN_OPCION + " TEXT," +
                     COLUMN_IMAGE_ABASTECIMIENTO + " TEXT," +
+                    COLUMN_NOMBRE + " TEXT," +
                     COLUMN_FECHA_CREACION + " TEXT" +
                     ")";
 

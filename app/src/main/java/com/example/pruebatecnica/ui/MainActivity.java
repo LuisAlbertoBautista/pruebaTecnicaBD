@@ -4,18 +4,26 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
 import com.example.pruebatecnica.databinding.ActivityMainBinding;
+import com.example.pruebatecnica.rest.ServiceApi;
+import com.example.pruebatecnica.ui.catalogo.database.AbastecimientoRepository;
 import com.example.pruebatecnica.ui.catalogo.viewmodels.CatalogoViewModel;
 import com.example.pruebatecnica.ui.consulta.Consulta;
 
-public class MainActivity extends AppCompatActivity {
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class MainActivity extends AppCompatActivity implements ServiceApi.ResponseHttp {
     private ActivityMainBinding binding;
     private CatalogoViewModel catalogoViewModel;
+    private ServiceApi serviceApi;
+    private AbastecimientoRepository abastecimientoRepository;
 
 
     @Override
@@ -28,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         binding.btnDescargar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                catalogoViewModel.getCatalogo(MainActivity.this);
+                getCatalogo();
             }
         });
 
@@ -62,4 +70,19 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void getCatalogo(){
+        serviceApi = new ServiceApi(this,true);
+        serviceApi.startConnection("firebase/api/catalogos/Sanit_abastecimiento");
+
+    }
+
+    @Override
+    public void processFinish(int code, JSONObject data) throws Exception {
+        catalogoViewModel.processFinish(data, this);
+    }
+
+    @Override
+    public void onFail() throws JSONException {
+
+    }
 }

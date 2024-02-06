@@ -4,7 +4,6 @@ package com.example.pruebatecnica.rest;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -16,7 +15,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -26,6 +24,7 @@ import com.example.pruebatecnica.R;
 
 public class ServiceApi {
 
+
     private Context context;
     private Boolean showLoading = true;
     private ConnectionModel connectionModel;
@@ -34,8 +33,6 @@ public class ServiceApi {
 
     private ResponseHttp delegate;
 
-    private int type_connection;
-    private String val;
 
     private static final String TAG = "consola";
 
@@ -44,6 +41,9 @@ public class ServiceApi {
         void onFail() throws JSONException;
     }
 
+
+
+    // SWIPE DETALLE
     public ServiceApi(Context context, Boolean showLoading){
         this.context = context;
         this.showLoading = showLoading;
@@ -54,7 +54,6 @@ public class ServiceApi {
         if (showLoading)
             showLoading();
     }
-
 
 
 
@@ -70,13 +69,6 @@ public class ServiceApi {
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
     }
 
-    public RequestBody makeRequestBody(JSONObject object){
-        return RequestBody.create(MediaType.parse("application/json"), object.toString());
-    }
-
-    public static RequestBody makeRequestBodyGlobal(JSONObject object){
-        return RequestBody.create(MediaType.parse("application/json"), object.toString());
-    }
 
 
     public void startConnection(final String url){
@@ -91,30 +83,24 @@ public class ServiceApi {
                         dialog.dismiss();
                     }
                 }
-
                 String string = null;
                 JSONObject data = null;
                 int code = response.code();
-
                 try {
                     if (response.body() != null){
                         string = response.body().string();
-                            if (!string.startsWith("{")){
-                                if (string.startsWith("[")){
-
-                                    JSONArray array_data = new JSONArray(string);
-                                    JSONObject obj_data = new JSONObject();
-                                    obj_data.put("data",array_data);
-                                    data = obj_data;
-                                }
-                            }
+                        JSONObject obj_data = new JSONObject(string);
+                        data = obj_data;
+                    }else{
+                        String error_message = response.errorBody().string();
+                            data = new JSONObject(error_message);
                     }
+
                     delegate.processFinish(code,data);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 if (showLoading){
@@ -122,7 +108,6 @@ public class ServiceApi {
                         dialog.dismiss();
                     }
                 }
-                String message = t.getMessage();
                 try {
                     delegate.onFail();
                 } catch (JSONException e) {
@@ -130,8 +115,9 @@ public class ServiceApi {
                 }
             }
         };
-
         connectionModel.simpleGet(url).enqueue(callback);
     }
+
+
 
 }

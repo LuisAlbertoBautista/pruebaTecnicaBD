@@ -2,6 +2,9 @@ package com.example.pruebatecnica.ui.consulta;
 
 import static android.content.ContentValues.TAG;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -35,6 +38,18 @@ public class Consulta extends AppCompatActivity implements EventosClick.ClickEle
     private CatalogoAdapter catalogoAdapter;
 
     private ItemCatalogo itemCatalogo;
+
+    private static final int REQUEST_STORAGE_PERMISSION = 101;
+
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    // Permiso concedido, puedes realizar acciones relacionadas con la escritura en la memoria aquí
+                } else {
+                    // Permiso denegado, puedes informar al usuario o realizar alguna acción adicional
+                }
+            });
+
 
 
     @Override
@@ -73,30 +88,31 @@ public class Consulta extends AppCompatActivity implements EventosClick.ClickEle
     }
     private void checkExternalStoragePermission() {
         Boolean isPermissionWrite = false;
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            Log.e(TAG, "Permission not granted WRITE_EXTERNAL_STORAGE.");
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                // le mandamos algun mensaje al usuario si es necesario pero para este caso de prueba lo dejamos asi
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 225);
-                isPermissionWrite = true;
-            }
-        }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            Log.e(TAG, "Permission not granted CAMERA.");
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.CAMERA)) {
+        checkAndRequestStoragePermission();
+        dispatchTakePictureIntent();
+    }
 
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.CAMERA}, 226);
-                if (isPermissionWrite)
-                    dispatchTakePictureIntent();
-            }
+    private void checkAndRequestStoragePermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+            requestPermissionLauncher.launch(Manifest.permission.CAMERA);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case REQUEST_STORAGE_PERMISSION:
+                // Verificar si el permiso fue concedido
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                } else {
+                    // Permiso denegado, puedes informar al usuario o realizar alguna acción adicional
+                }
+                break;
         }
     }
 
@@ -110,6 +126,7 @@ public class Consulta extends AppCompatActivity implements EventosClick.ClickEle
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d("datos", data.getExtras().toString());
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");

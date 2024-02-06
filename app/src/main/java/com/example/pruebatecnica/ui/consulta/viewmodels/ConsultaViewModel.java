@@ -21,8 +21,10 @@ public class ConsultaViewModel extends ViewModel {
     private MutableLiveData <Boolean> update = new MutableLiveData<>();
     public void getData(Context context){
         abastecimientoRepository = new AbastecimientoRepository(context);
+        abastecimientoRepository.open();
         List<ItemCatalogo> itemCatalogos = new ArrayList<>();
         List<Abastecimiento> abastecimientos = abastecimientoRepository.getAllAbastecimientos();
+        consultRepository = new ConsultRepository(context);
         if (abastecimientos.size()> 0) {
             for (Abastecimiento abastecimiento : abastecimientos){
                 ItemCatalogo itemCatalogo =  new ItemCatalogo();
@@ -37,6 +39,7 @@ public class ConsultaViewModel extends ViewModel {
     }
 
     private void setUpdateOpcionUserInitial(List<ItemCatalogo> items){
+        consultRepository.open();
         List< ItemCatalogo> itemCatalogoList = consultRepository.getAllItemCatalogo();
         if (itemCatalogoList.size() > 0){
             this.itemCatalogoList.setValue(itemCatalogoList);

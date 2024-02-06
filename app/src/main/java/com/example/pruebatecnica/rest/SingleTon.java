@@ -15,7 +15,7 @@ import retrofit2.Retrofit;
 public class SingleTon {
     private static Retrofit retrofit = null;
 
-    public static final String BASE_URL = "";
+    public static final String BASE_URL = "https://www.calymayor.com.mx/";
 
 
     public static final ArrayList<Interceptor> requestInterceptors = new ArrayList<>();

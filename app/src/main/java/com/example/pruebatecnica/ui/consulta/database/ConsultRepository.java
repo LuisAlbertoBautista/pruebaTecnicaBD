@@ -128,7 +128,7 @@ public class ConsultRepository {
         Cursor cursor = null;
 
         try {
-            cursor = database.query(DatabaseHelper.TABLE_ABASTECIMIENTO, null, null, null, null, null, null);
+            cursor = database.query(DatabaseHelper.TABLE_OPCIONES_DE_USUARIO, null, null, null, null, null, null);
 
             if (cursor != null && cursor.moveToFirst()) {
                 do {
